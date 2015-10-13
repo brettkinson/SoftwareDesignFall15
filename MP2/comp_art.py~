@@ -123,6 +123,7 @@ def generate_art(filename, x_size, y_size):
         for j in range(y_size):
             x = remap_interval(i, 0, x_size, -1, 1)
             y = remap_interval(j, 0, y_size, -1, 1)
+            #print(x)
             pixels[i, j] = (
                     color_mapping(evaluate_random_function(red, x, y)),
                     color_mapping(evaluate_random_function(green, x, y)),
