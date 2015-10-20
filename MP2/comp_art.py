@@ -22,7 +22,9 @@ def build_random_function(min_depth, max_depth):
     
     if max_depth == 0:
         return [random.choice(["x","y"])]
-        
+    
+    # it looks like once you've exceeded min_depth, it will only return x and y 
+    # as functions until it hits max depth. was this intentional?
     elif min_depth <= 0 and random.randint(0,1):
         return [random.choice(["x","y"])]
         
@@ -131,4 +133,5 @@ def generate_art(filename, x_size, y_size):
 
     im.save(filename)
 
+# don't forget - always a good idea to encapsulate this in if __name__ == "__main__":
 generate_art('test1.png',500,500)
