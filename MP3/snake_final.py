@@ -26,19 +26,27 @@ class SnakeWorld():
 		self.score = 0
 
 		self.head = SnakeHead((0,255,0),320,240,10,10,0,-10)
-		self.food = Food((random.randint(0,255),random.randint(0,255),random.randint(0,255)),random.randint(10,630),random.randint(10,470),10,10)
+		# Looks like you're making random colors frequently (random.randint(0,255)...) tuples
+    # Would be cleaner to write a function which returns a tuple representing a random color
+
+    # Might be worth parameterizing the other two args to depend on screen size, too -- right now, if you want to change screen size, you
+    # have to go through and update all of the other "magic numbers" which determine the snake's initial position, place food, etc.
+    # Always good to make it easy to modify your work.
+    self.food = Food((random.randint(0,255),random.randint(0,255),random.randint(0,255)),random.randint(10,630),random.randint(10,470),10,10)
 		self.headRect = pygame.Rect(self.head.x,self.head.y,self.head.width,self.head.height)
 		self.foodRect = pygame.Rect(self.food.x,self.food.y,self.food.width,self.food.height)
 
 
 	def update(self):
-		self.is_dead = False
+		self.is_dead = False # What does setting is_dead to false here do? Is this necessary? (at the very least, leave a comment)
 		self.xlocal.append(self.head.x)
 		self.ylocal.append(self.head.y)
 		self.head.update()
 		self.headRect = pygame.Rect(self.head.x,self.head.y,self.head.width,self.head.height)
 
 		i = 1
+    # You can use this construct: for i,item in enumerate(self.tails) -> be aware that this i will start at 0 and yours starts at 1
+    # That way you don't have to up the counter manually
 		for item in self.tails:
 			item.update((random.randint(0,255),random.randint(0,255),random.randint(0,255)),self.xlocal[-i],self.ylocal[-i])
 			i += 1
@@ -49,13 +57,15 @@ class SnakeWorld():
 			tail = SnakeTail((0,255,0),self.xlocal[-1],self.ylocal[-1],10,10)
 			self.tails.append(tail)
 		else:
+      # Empty else blocks are unnecessary
 			pass
 
 		self.check_dead()
 		self.score = len(self.tails)
-			
+
 
 	def check_dead(self):
+    # vv Remove dead code before submitting
 #		for count , t in enumerate(self.tails):
 #			if t.x == self.xlocal[-(count)] and t.y == self.ylocal[-(count)] and count > 2:
 #				self.is_dead = True
@@ -68,9 +78,10 @@ class SnakeWorld():
 
 
 	def reset(self):
-		self.xlocal = [] 
+    # ...Could you call self.reset() in the __init__ method to avoid the copy/pasting of setup code?
+		self.xlocal = []
 		self.ylocal = []
-		self.tails = [] 
+		self.tails = []
 		self.is_dead = False
 		self.score = 0
 
@@ -80,7 +91,7 @@ class SnakeWorld():
 		self.foodRect = pygame.Rect(self.food.x,self.food.y,self.food.width,self.food.height)
 
 
-	
+
 class SnakeHead():
 	def __init__(self,color,x,y,width,height,vx,vy):
 		self.color = color
@@ -99,6 +110,8 @@ class SnakeHead():
 
 
 class SnakeTail():
+  # Might be worth documenting -- took me a minute to figure out why your snake has one head
+  # and more than one tail
 	def __init__(self,color,x,y,width,height):
 		self.color = color
 		self.x = x
@@ -127,6 +140,9 @@ class Food():
 		self.y = y_new
 
 
+# SnakeHead, SnakeTail, and Food are all pretty similar -- because they're so simple, inheritance
+# isn't really necessary, but you could definitely set up, e.g., a Rectangle class which all three inherit from
+
 
 class PyGameWindow():
 	def __init__(self,world):
@@ -143,7 +159,8 @@ class PyGameWindow():
 
 		pygame.draw.rect(self.screen, pygame.Color(self.world.food.color[0],self.world.food.color[1],self.world.food.color[2]),pygame.Rect(self.world.food.x,self.world.food.y,self.world.food.width,self.world.food.height))
 		pygame.draw.rect(self.screen, pygame.Color(self.world.head.color[0],self.world.head.color[1],self.world.head.color[2]),pygame.Rect(self.world.head.x,self.world.head.y,self.world.head.width,self.world.head.height))
-		
+
+    # Why does this happen twice? (see line 157)
 		for item in self.world.tails:
 			pygame.draw.rect(self.screen, pygame.Color(item.color[0],item.color[1],item.color[2]),pygame.Rect(item.x,item.y,item.width,item.height))
 
@@ -152,11 +169,11 @@ class PyGameWindow():
 class GameController():
 	def __init__(self,world):
 		self.world = world
-	    
+
 	def keyboard_event(self,event):
 		if event.key == pygame.K_UP:
 			if self.world.head.vy == 10 or self.world.head.vy == -10:
-				return
+				return # Might be worth documenting why this just returns -- so snake can't reverse direction?
 			else:
 				self.world.head.vx = 0
 				self.world.head.vy = -10
@@ -198,7 +215,7 @@ if __name__ == '__main__':
 	FPS = 30 #set max frame rate
 	total_time = 0.0 #initialize total play time counter
 	clock = pygame.time.Clock()
-  
+
 
 	while running:
 		milliseconds = clock.tick(FPS)
